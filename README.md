@@ -29,5 +29,5 @@ DB: Mongoose
 
 
 Полезные ссылки:
-Игровой баланс - https://gdcuffs.com/balance-3/
+Игровой баланс - https://gdcuffs.com/balance-3/ <br>
 Игровой цикл - https://martalex.gitbooks.io/gameprogrammingpatterns/content/chapter-3/3.2-game-loop.html
