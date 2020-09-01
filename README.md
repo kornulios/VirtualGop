@@ -26,3 +26,8 @@ DB: Mongoose
 ## Медотология разработки
 Предлагается придерживаться по максимуму принципа КИСС и не усложнять проект новыми фичами.
 По крайней мере до стадии МЕР
+
+
+Полезные ссылки:
+Игровой баланс - https://gdcuffs.com/balance-3/
+Игровой цикл - https://martalex.gitbooks.io/gameprogrammingpatterns/content/chapter-3/3.2-game-loop.html
