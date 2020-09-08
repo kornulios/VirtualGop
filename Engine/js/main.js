@@ -82,7 +82,7 @@ App.GApp.GEngine = (function () {
 		this.getLocationPathes = () => _locationPathes;		// не захищає від внесення змін всередину
 		_map = this;
 	}
-	GMap.prototype.getNearbyLocations = function (code) {
+	GMap.prototype.getNearbyLocPathes = function (code) {
 		return this.getLocationPathes().filter((path) => (path.getLoc1Code() == code) || (path.getLoc2Code() == code));
 	}
 	GMap.prototype.findLocationPath = function (from, to) {
@@ -115,15 +115,15 @@ App.GApp.GEngine = (function () {
 		}
 		return out;
 	}
-	GStoryteller.prototype.describe = function (action, sucess, params) {
+	GStoryteller.prototype.describe = function (action, params) {
 		let out = [];
 		switch (action) {
-			case "p_go": {
-				let { locFrom, locTo } = params,
+			case "p_go_loc": {
+				let { locFrom, locTo, sucess } = params,
 					sentences = {
 						"true": [
 							// в-на, у, к, возле, перед 
-							[`Ты пришел в ${locTo.getName()}`],					
+							[`Ты пришел в ${locTo.getName()}`],
 							[`Ты приперся к ${locTo.getName()}`],
 							[`Ты поперся в ${locTo.getName()}`],
 							[`Ты остановился возле ${locTo.getName()}`],
@@ -138,9 +138,9 @@ App.GApp.GEngine = (function () {
 						"true": [
 							// тут можна і універсальні фрази, які доповнюють будь-яке речення
 							// голос за кадром може жартувати над гравцем
-							[`Энергично осматриваясь вокруг, ты судорожно пытаешся вспомнить, зачем ты это сделал.`],										
-							[`Героически осматривая все вокруг, ты гордо вспоминаешь, как тебя здесь п_дили на 1-ом курсе. Да, а ведь были времена!`],		
-							[`Зачем - одному Богу известно.`],												
+							[`Энергично осматриваясь вокруг, ты судорожно пытаешся вспомнить, зачем ты это сделал.`],
+							[`Героически осматривая все вокруг, ты гордо вспоминаешь, как тебя здесь п_дили на 1-ом курсе. Да, а ведь были времена!`],
+							[`Зачем - одному Богу известно.`],
 							[`И зачем, умник?`],
 							[`Что ты собираешся здесь делать?`],
 							[`Хм, ты явно что-то задумал.`],
@@ -151,16 +151,19 @@ App.GApp.GEngine = (function () {
 							[`Ты стоишь как супермен, разглядывая проходящих мимо тебя девушек.`],
 							[`Ммм... Вон та, в беленьком  - очень неплохо...`],
 							[`Ммм...`],
+							[`Ты ущипнул за попку проходящую мимо девушку.`],
 							[`Тебя ущипнула за попку проходящая мимо девушка.`],
 							[`Тебе подмигнула красотка напротив.`],
 							[`Ты заметил, что на тебя поглядывают две взрослые тетки.`],
-							[`Ты услышал знакомый запах, и аккуратно принюхался. Нет, похоже, это был не ты.`],
+							[`Услышав знакомый запах, ты аккуратно принюхался. Нет, похоже, это был не ты.`],
 							[`Блин! Ты опять влез в жвачку! Вот подстава!`],
 							[`Эй, дружище, можно тебя на два слова... - услышал ты справа от себя, и мастерски смешался с толпой.`],
-							[`По-моему, вот как раз один из 12-ой группы... - услышал ты слева от себя, и мастерски смешался с толпой.`],
-							[`Слыш, пацан... - услышал ты позади себя, и мастерски смешался с толпой.`],
-							[`О, монетка! Пока ты наклонялся за ней, у тебя из кармана вытянули двадцатку.`],
+							[`По-моему, вон один из 12-ой группы... - услышал ты слева от себя, и за полсекунды растворился в проходящих мимо.`],
+							[`Слыш, пацан... - услышал ты позади себя, и моменально оказался значительно дальше, чем можно было представить.`],
+							[`О, монетка! Пока ты наклонялся за ней, у тебя из кармана вытащили двадцатку.`],
 							[`Слыш, а тебе не пора на пары?`],
+							[`Тщательно выбрав место, ты незаметно приклеил на него жвачку.`],
+							[`Слыш, а ты Горлача знаешь? Вот он... - донеслось до тебя из толпы, но веселая компания уже скрылась за поворотом.`],
 						],
 						"false": [
 							[`Что тебе непонятно?`],
@@ -180,30 +183,63 @@ App.GApp.GEngine = (function () {
 				break;
 			}
 			case "p_go_same": {
-				let sentences = {
-					"true": [
-						[`Как думаешь, где ты сейчас?`],
-						[`А ты сейчас где?`],
-						[`Эйй, парень, соберись.`],
-						[`Парень, соберись.`],
-						[`Ты шутишь?`],
-						[`Опять шуточки, да?`],
-						[`Подожди.`],
-						[`Не спеши.`],
-						[`У тебя развязался шнурок.`],
-						[`Ты пьяный?`],
-						[`Как хочешь.`],
-						[`Сделав круг почета, ты вернулся туда, откуда пришел.`],
-						[`Трезво поразмыслив, ты решил этого не делать.`],
-						[`Есть моменты, когда я начинаю сомневаться в твоих умственных способностях.`],
-						[`Дважды два - четыре, дважды два - четыре...`],
-						[`Монетку подбросить, что ли.`],
-					],
-					"false": [],
-				}
-				out = this.selectSentence(sentences["true"]);
+				let sentences = [
+					[`Как думаешь, где ты сейчас?`],
+					[`А ты сейчас где?`],
+					[`Эйй, парень, соберись.`],
+					[`Парень, соберись.`],
+					[`Ты шутишь?`],
+					[`Опять шуточки, да?`],
+					[`Подожди.`],
+					[`Не спеши.`],
+					[`У тебя развязался шнурок.`],
+					[`Ты пьяный?`],
+					[`Как хочешь.`],
+					[`Сделав круг почета, ты вернулся туда, откуда пришел.`],
+					[`Трезво поразмыслив, ты решил этого не делать.`],
+					[`Есть моменты, когда я начинаю сомневаться в твоих умственных способностях.`],
+					[`Дважды два - четыре, дважды два - четыре...`],
+					[`Монетку подбросить, что ли.`],
+				];
+				out = this.selectSentence(sentences);
 				break;
 			}
+			case "p_go":
+				{
+					let { locCodeFrom, locCodesTo, map } = params;
+					out = locCodesTo.map((code) => {
+						let loc = map.findLocation(code);
+						// sentence
+						return `${loc.getCode()} - ${loc.getName()}`;
+					});
+					let sentences = [
+						[`Отсюда можно пойти: `],
+						[`Отсюда ты можешь податься: `],
+						[`Тебе говорили, что отсюда можно пойти: `],
+						[`Как ты помнишь, отсюда можно податься: `],
+						[`Ты всегда знал, что отсюда можно пойти: `],
+						[`Как опытный прогульщик, ты знаешь все тропинки: `],
+						[`Как знатный ботан, ты помнишь все пути: `],
+						[`Надеюсь, ты не забыл, что отсюда можно пойти: `],
+						[`Избери свой путь: `],
+						[`Выбери направление: `],
+						[`Дорога рождается под ногами идущего: `],
+						[`Чтобы прийти, нужно идти: `],
+						[`Че стоишь? `],
+						[`Че залип? `],
+						[`Куда хочешь? `],
+						[`М-да, вот если бы ты ходил на пары... `],
+						[`Че, прогульщик? `],
+						// [`М-да, вот если бы ты учился... `],
+
+
+					];
+					out = this.selectSentence(sentences).concat(out);
+					let loc = map.findLocation(locCodeFrom);
+					out.unshift(`Сейчас ты находишся в ${loc.getName()}.`);
+
+					break;
+				}
 			default: {
 				throw new Error(`Действие '${action}' не описано в GStoryteller.${name}`);
 			}
@@ -227,11 +263,11 @@ App.GApp.GEngine = (function () {
 	});
 
 	let _engine;
-	function GEngine(devPlayerId, devDebug) {
-		if (!(this instanceof GEngine)) { return new GEngine(devPlayerId, devDebug); }
+	function GEngine(devPlayerId, debugParams) {
+		if (!(this instanceof GEngine)) { return new GEngine(devPlayerId, debugParams); }
 		if (typeof _engine === "object") { return _engine };
 
-		this.devDebug = devDebug;							// debug options
+		this.debugParams = debugParams;						// debug options
 		this.devPlayerId = devPlayerId;						// todo - refactor
 		let _defPlayerName = 'Раздолбай';
 		let _defLocationCode = "kz";						// todo - refactor
@@ -261,28 +297,49 @@ App.GApp.GEngine = (function () {
 	GEngine.prototype.getPlayer = function (id) {
 		return this.getPlayers().find(p => p.getId() === id);
 	}
+	GEngine.prototype.showPlayerPathes = function (player) {
+		let out = [],
+			action = "";
+
+		let ps = this.getMap().getNearbyLocPathes(player.locCode);
+		let locCodesTo = ps.map((p) => {
+			return player.locCode !== p.getLoc1Code() ?
+				p.getLoc1Code() : p.getLoc2Code();
+		});
+
+		action = "p_go";
+		actParams = {
+			locCodeFrom: player.locCode,
+			locCodesTo: locCodesTo,
+			map: this.getMap(),		// todo - refactor - dictionary in Storyteller
+		}
+		out = this.getStoryteller().describe(action, actParams);
+		return out;
+	}
 	GEngine.prototype.movePlayer = function (player, loc) {
 		let out = [],
-			action = "",
-			sucess = false,
-			actParams = {
-				locFrom: this.getMap().findLocation(player.locCode),
-				locTo: loc
-			};
+			action = "";
 
 		if (player.locCode === loc.getCode()) {
 			action = "p_go_same";
-			sucess = true;
+			out = this.getStoryteller().describe(action);
 		}
 		else {
-			action = "p_go";
+			action = "p_go_loc";
+
 			let path = this.getMap().findLocationPath(player.locCode, loc.getCode());
-			sucess = !!path;
+			let sucess = !!path;
 			if (sucess) {
 				player.locCode = loc.getCode();
 			}
+
+			let actParams = {
+				locFrom: this.getMap().findLocation(player.locCode),
+				locTo: loc,
+				sucess: sucess,
+			};
+			out = this.getStoryteller().describe(action, actParams);
 		}
-		out = this.getStoryteller().describe(action, sucess, actParams);
 		return out;
 	}
 	GEngine.prototype.receiveSignal = function (inp, playerId) {
@@ -291,7 +348,7 @@ App.GApp.GEngine = (function () {
 				player = this.getPlayer(playerId),
 				params = inp.toLowerCase().split(" "),
 				signal = params.shift();
-			if (this.devDebug.logTime) { console.time("*GEngine.prototype.receiveSignal(): "); }
+			if (this.debugParams.logTime) { console.time("*GEngine.prototype.receiveSignal(): "); }
 			setTimeout(() => {
 				try {
 					switch (signal) {
@@ -311,7 +368,7 @@ App.GApp.GEngine = (function () {
 							if (!(player instanceof GMudak)) { break; }					// guard - для обробки сигналу потрібен гравець
 							out = [
 								// player.getId(), 
-								player.name, 
+								player.name,
 								// player.getType(),
 								this.getMap().findLocation(player.locCode).getName(),
 							];
@@ -321,8 +378,9 @@ App.GApp.GEngine = (function () {
 								if (!(player instanceof GMudak)) { break; }				// guard - для обробки сигналу потрібен гравець
 
 								if (params.length == 0) {								// go
-									out = this.getMap().getNearbyLocations(player.locCode);
-								} else {
+									out = this.showPlayerPathes(player);
+								}
+								else {
 									let locCode = params[0];							// go <loc>
 
 									let locTo = this.getMap().findLocation(locCode);	// guard - для обробки сигналу потрібна локація
@@ -338,7 +396,7 @@ App.GApp.GEngine = (function () {
 					// reject(new Error('Test error :)'));
 				}
 				finally {
-					if (this.devDebug.logTime) { console.timeEnd("*GEngine.prototype.receiveSignal(): "); }
+					if (this.debugParams.logTime) { console.timeEnd("*GEngine.prototype.receiveSignal(): "); }
 				}
 			}, Math.ceil(Math.random() * 2000));
 		});
@@ -350,9 +408,9 @@ App.GApp.GEngine = (function () {
 
 App.define("GApp.GConsole");
 App.GApp.GConsole = (function (global) {
-	function GConsole(engine, devDebug) {
-		if (!(this instanceof GConsole)) { return new GConsole(engine, devDebug); }
-		this.devDebug = devDebug;							// debug options
+	function GConsole(engine, debugParams) {
+		if (!(this instanceof GConsole)) { return new GConsole(engine, debugParams); }
+		this.debugParams = debugParams;						// debug options
 		this.getEngine = () => engine;						// не захищає від внесення змін всередину
 		this.getPlayerId = () => this.getEngine().devPlayerId;
 		this._enableInput = this._setEnableInput(true);
@@ -365,12 +423,12 @@ App.GApp.GConsole = (function (global) {
 	}
 	GConsole.prototype._setEnableInput = function (bool) {
 		this._enableInput = bool;
-		if (this.devDebug.logEnableInput) { this._log("*GConsole._enableInput == " + this._enableInput); }
+		if (this.debugParams.logEnableInput) { this._log("*GConsole._enableInput == " + this._enableInput); }
 		if (this._enableInput) { this._log(''); }
 	}
 	GConsole.prototype._sendSignal = function (signal) {
 		try {
-			if (this.devDebug.logSignal) { this._log('*signal: ' + signal); }
+			if (this.debugParams.logSignal) { this._log('*signal: ' + signal); }
 			this._setEnableInput(false);
 			return this.getEngine().receiveSignal(signal, this.getPlayerId());
 		}
@@ -412,7 +470,7 @@ App.GApp.GConsole = (function (global) {
 	}
 	GConsole.prototype.runAutoTest = async function () {
 		try {
-			if (this.devDebug.logTime) { console.time("*GConsole.prototype.runAutoTest(): "); }
+			if (this.debugParams.logTime) { console.time("*GConsole.prototype.runAutoTest(): "); }
 			await this.initTest();
 			let signals = [
 				() => this._sendSignal("go"),
@@ -431,7 +489,7 @@ App.GApp.GConsole = (function (global) {
 			console.error("Catched in 'Console.prototype.runAutoTest()': " + error);
 		}
 		finally {
-			if (this.devDebug.logTime) { console.timeEnd("*GConsole.prototype.runAutoTest(): "); }
+			if (this.debugParams.logTime) { console.timeEnd("*GConsole.prototype.runAutoTest(): "); }
 		}
 	}
 	GConsole.prototype.runDevInput = async function () {
@@ -447,7 +505,7 @@ App.GApp.GConsole = (function (global) {
 					continue;
 				case null:
 				case "e":
-					if (this.devDebug.logSignal) { this._log(`signal: ${s}`); }
+					if (this.debugParams.logSignal) { this._log(`signal: ${s}`); }
 					cont = global.confirm(`Continue?`);
 					this._log(`Continue?: ${cont}`);
 					if (!cont) {
@@ -472,7 +530,7 @@ App.GApp.GConsole = (function (global) {
 // Крок 3 - використання бібліотеки
 (function (global) {
 	// logs
-	const devDebug = {
+	const debugParams = {
 		logTime: false,
 		logEnableInput: false,
 		logSignal: false,
@@ -482,9 +540,8 @@ App.GApp.GConsole = (function (global) {
 	const devPlayerId = 0;
 
 	// run
-	let gEngine = new App.GApp.GEngine(devPlayerId, devDebug);
-	let gConsole = new App.GApp.GConsole(gEngine, devDebug);
-
+	let gEngine = new App.GApp.GEngine(devPlayerId, debugParams);
+	let gConsole = new App.GApp.GConsole(gEngine, debugParams);
 	// gConsole.runAutoTest();		// запуск автотеста
 	setTimeout(() => {				// запуск так, щоб працював real-time вивід в консоль
 		gConsole.runDevInput();		// запуск з ручним вводом сигналів
